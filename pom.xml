@@ -10,6 +10,14 @@
   <name>HDFS Sync</name>
   <url>http://maven.apache.org</url>
 
+  <pluginRepositories>
+     <pluginRepository>
+       <id>scala-tools.org</id>
+       <name>Scala-tools Maven2 Repository</name>
+       <url>http://scala-tools.org/repo-releases</url>
+     </pluginRepository>
+   </pluginRepositories>
+
   <build>
     <plugins>
       <plugin>
@@ -42,23 +50,18 @@
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.4.3</version>
       </plugin>
-      <plugin>
-        <groupId>net.alchim31.maven</groupId>
-        <artifactId>scala-maven-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <recompileMode>incremental</recompileMode>
-          <useZincServer>true</useZincServer>
-        </configuration>
-        <executions>
-            <execution>
-                <goals>
-                    <goal>compile</goal>
-                    <goal>testCompile</goal>
-                </goals>
+           <plugin>
+             <groupId>org.scala-tools</groupId>
+             <artifactId>maven-scala-plugin</artifactId>
+             <executions>
+             <execution>
+              <phase>compile</phase>
+              <goals>
+                <goal>compile</goal>
+              </goals>
             </execution>
-        </executions>
-      </plugin>
+          </executions>
+           </plugin>
     </plugins>
   </build>
 

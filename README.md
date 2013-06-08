@@ -7,5 +7,5 @@ mvn package
 
 Use:
 ````
-hadoop jar target/hdfsync-0.0.1-jar-with-dependencies.jar from_files... src_dir
+bin/hdfsync from_files... src_dir
 ````

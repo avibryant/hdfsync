@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+exec("hadoop", "jar", File.join(ROOT, "target", "hdfsync-0.0.1-jar-with-dependencies.jar"), *ARGV)
