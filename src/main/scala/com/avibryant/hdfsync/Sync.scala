@@ -5,6 +5,8 @@ import org.apache.hadoop.conf._
 import org.apache.hadoop.fs._
 
 class Sync extends Configured with Tool {
+  val updateOldFiles = false
+
   override def run(args : Array[String]) = {
     if(args.size < 2) {
       System.err.println("Usage: hadoop jar hdfsync.jar src_files... dest_dir")
@@ -49,7 +51,7 @@ class Sync extends Configured with Tool {
     val dest = new Path(destDir, src.getName)
     if(destFS.exists(dest)) {
       val destStatus = destFS.getFileStatus(dest)
-      if(destStatus.getModificationTime < srcStatus.getModificationTime) {
+      if(updateOldFiles && (destStatus.getModificationTime < srcStatus.getModificationTime)) {
         System.err.println("Updating old file...")
       } else {
           return
