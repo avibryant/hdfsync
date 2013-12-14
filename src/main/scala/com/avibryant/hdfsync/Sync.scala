@@ -3,10 +3,11 @@ package com.avibryant.hdfsync
 import org.apache.hadoop.util._
 import org.apache.hadoop.conf._
 import org.apache.hadoop.fs._
+import java.security._
+import java.io.FileInputStream
+import java.math._
 
 class Sync extends Configured with Tool {
-  val updateOldFiles = false
-
   override def run(args : Array[String]) = {
     if(args.size < 2) {
       System.err.println("Usage: hadoop jar hdfsync.jar src_files... dest_dir")
@@ -43,23 +44,32 @@ class Sync extends Configured with Tool {
     val srcFS = FileSystem.getLocal(getConf)
 
     if(!srcFS.exists(src)) {
-      System.err.println("Could not find file: " + src);
+      System.err.println("Could not find file: " + src)
       return
     }
 
-    val srcStatus = srcFS.getFileStatus(src)
-    val dest = new Path(destDir, src.getName)
-    if(destFS.exists(dest)) {
-      val destStatus = destFS.getFileStatus(dest)
-      if(updateOldFiles && (destStatus.getModificationTime < srcStatus.getModificationTime)) {
-        System.err.println("Updating old file...")
-      } else {
-          return
-      }
+    val srcDigest = digest(src)
+
+    val dest = new Path(destDir, srcDigest)
+    if(!destFS.exists(dest)) {
+      System.err.println(src + " -> " + dest)
+      destFS.copyFromLocalFile(false, true, src, dest)
+    }
+    System.out.println(dest)
+  }
+
+  def digest(src : Path) = {
+    val md = MessageDigest.getInstance("MD5")
+    val is = new FileInputStream(src.toString)
+    val buffer = new Array[Byte](8192);
+    var read = is.read(buffer)
+    while(read > 0) {
+      md.update(buffer, 0, read)
+      read = is.read(buffer)
     }
 
-    System.err.println(src + " -> " + dest)
-    destFS.copyFromLocalFile(false, true, src, dest)
+    val bigInt = new BigInteger(1, md.digest);
+    bigInt.toString(16)
   }
 }
 
